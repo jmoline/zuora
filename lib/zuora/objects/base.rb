@@ -96,6 +96,13 @@ module Zuora::Objects
       !new_record?
     end
 
+    # convenience method, some attributes are not required
+    # when the object is part of a subscription request
+    attr_writer :subscribing
+    def subscribing?
+      @subscribing
+    end
+
     # save the record by updating or creating the record.
     def save
       return false unless valid?

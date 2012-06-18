@@ -24,6 +24,12 @@ describe Zuora::Objects::Contact do
       subject.errors[:account_id].should include("can't be blank")
     end
 
+    it 'does not require account_id if subscribing' do
+      subject.subscribing = true
+      subject.valid?
+      subject.errors[:account_id].should_not include("can't be blank")
+    end
+
     it "requires first_name" do
       subject.errors[:first_name].should include("can't be blank")
     end

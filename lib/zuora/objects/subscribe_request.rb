@@ -32,6 +32,7 @@ module Zuora::Objects
       obj = obj.is_a?(Array) ? obj : [obj]
       obj.each do |object|
         if object.new_record? || object.changed?
+          object.subscribing = true
           errors[ref] << "is invalid" unless object.valid?
         end
       end
