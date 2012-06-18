@@ -138,7 +138,7 @@ module Zuora::Objects
 
     def generate_subscription(builder)
       subscription.to_hash.each do |k,v|
-        builder.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
+        builder.__send__(ons, k.to_s.camelize.to_sym, (v.is_a?(Date) ? v.to_datetime.strftime("%FT%T%:z") : v)) unless v.nil?
       end
     end
 
