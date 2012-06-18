@@ -30,6 +30,7 @@ module Zuora::Objects
       obj = self.send(ref)
       return errors[ref] << "must be provided" if obj.nil?
       if obj.new_record? || obj.changed?
+        obj.subscribing = true
         errors[ref] << "is invalid" unless obj.valid?
       end
     end

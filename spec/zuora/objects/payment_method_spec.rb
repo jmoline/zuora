@@ -28,6 +28,20 @@ describe Zuora::Objects::PaymentMethod do
     end
   end
 
+  describe "validations" do
+    let(:payment_method) { Zuora::Objects::PaymentMethod.new }
+    it "requires account_id" do
+      payment_method.valid?.should be_false
+      payment_method.errors[:account_id].should include("can't be blank")
+    end
+
+    it "does not require account_id when subscribing" do
+      payment_method.subscribing = true
+      payment_method.valid?.should be_false
+      payment_method.errors[:account_id].should_not include("can't be blank")
+    end
+  end
+
   describe "write only attributes" do
     ach = FactoryGirl.build(:payment_method_ach)
     ach.write_only_attributes.should == [:ach_account_number, :credit_card_number,
@@ -37,7 +51,7 @@ describe Zuora::Objects::PaymentMethod do
   describe "Credit Card" do
     it "generates proper request xml" do
       MockResponse.responds_with(:payment_method_credit_card_create_success) do
-        
+
         FactoryGirl.create(:payment_method_credit_card, :account => @account)
 
         xml = Zuora::Api.instance.last_request
