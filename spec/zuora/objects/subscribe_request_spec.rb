@@ -24,7 +24,7 @@ describe Zuora::Objects::SubscribeRequest do
         subject.payment_method = Zuora::Objects::PaymentMethod.find('stub')
       end
 
-      MockResponse.responds_with(:payment_method_credit_card_find_success) do
+      MockResponse.responds_with(:product_rate_plan_find_success) do
         subject.product_rate_plans = [Zuora::Objects::ProductRatePlan.find('stub')]
       end
 
@@ -46,7 +46,7 @@ describe Zuora::Objects::SubscribeRequest do
         with_value('4028e4873491cc770134972e75746e4c')
       xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:Subscription")
       xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:RatePlanData/#{zns}:RatePlan/#{ons}:ProductRatePlanId").
-        with_value('4028e48834aa10a30134c50f40901ea7')
+        with_value('4028e4883491c50901349d0e1e571341')
       xml.should_not have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{ons}:SubscribeOptions")
     end
 
