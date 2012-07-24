@@ -25,17 +25,14 @@ module Zuora::Associations
       klass_name = prefix + klass_sym.to_s.classify
       klass_name = prefix + options[:class_name] if options[:class_name]
 
-      instance_eval do
-        define_method "#{klass_sym}" do
-          klass = eval(klass_name)
-          klass.where("Id = '#{self.send("#{klass_sym}_id")}'").try(:first)
-        end
-      end
-
       class_eval <<-EVAL
         define_method "#{klass_sym}=" do |obj|
           #{klass_sym}_id_will_change!
           @#{klass_sym}_id = obj.id
+        end
+
+        define_method "#{klass_sym}" do
+          @#{klass_sym} ||= klass_name.constantize.where("Id = '" + send("#{klass_sym}_id") + "'").try(:first)
         end
       EVAL
     end
