@@ -58,6 +58,10 @@ module Zuora
       client.wsdl.document = SANDBOX_WSDL
     end
 
+    def sandbox?
+      config && config.sandbox
+    end
+
     # The XML that was transmited in the last request
     # @return [String]
     def last_request
@@ -113,7 +117,7 @@ module Zuora
 
     def make_client
       Savon::Client.new do
-        wsdl.document = defined?(ZUORA_WSDL) ? ZUORA_WSDL : PRODUCTION_WSDL
+        wsdl.document = sandbox? ? SANDBOX_WSDL : PRODUCTION_WSDL
         http.auth.ssl.verify_mode = :none
       end
     end
