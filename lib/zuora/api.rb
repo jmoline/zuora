@@ -35,6 +35,10 @@ module Zuora
     # @return [Zuora::Config]
     attr_accessor :config
 
+    def zconfig
+      config
+    end
+
     PRODUCTION_WSDL = File.expand_path('../../../wsdl/production/zuora.a.38.0.wsdl', __FILE__)
     SANDBOX_WSDL    = File.expand_path('../../../wsdl/sandbox/zuora.a.55.0.wsdl', __FILE__)
 
@@ -92,7 +96,7 @@ module Zuora
     def authenticate!
       response = client.request(:login) do
         ns = client.soap.namespace_by_uri('http://api.zuora.com/')
-        soap.body = "<#{ns}:username>#{config.username}</#{ns}:username><#{ns}:password>#{config.password}</#{ns}:password>"
+        soap.body = "<#{ns}:username>#{zconfig.username}</#{ns}:username><#{ns}:password>#{zconfig.password}</#{ns}:password>"
       end
       self.session = Zuora::Session.generate(response.to_hash)
     rescue Savon::SOAP::Fault => e

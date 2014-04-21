@@ -5,7 +5,7 @@ module Zuora
       @configs ||= {}
       api = Zuora::Api.new
       api.config = Zuora::Config.new(options)
-      api.sandbox! if api.config.sanbox
+      api.sandbox! if api.config.sandbox
       @configs[name] = api
     end
 
