@@ -55,7 +55,7 @@ module Zuora
     # Change client to sandbox url
     def sandbox!
       @client = nil
-      self.class.instance.client.wsdl.document = SANDBOX_WSDL
+      client.wsdl.document = SANDBOX_WSDL
     end
 
     # The XML that was transmited in the last request
