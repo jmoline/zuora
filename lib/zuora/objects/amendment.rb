@@ -47,7 +47,7 @@ module Zuora::Objects
 
     def create
       return false unless valid?
-      result = Zuora::Api.instance.request(:amend) do |xml|
+      result = self.connector.current_client.request(:amend) do |xml|
         xml.__send__(zns, :requests) do |s|
           s.__send__(zns, :Amendments) do |a|
             to_hash.each do |k,v|
