@@ -17,7 +17,7 @@ module Zuora
       current_client.request(:create) do |xml|
         xml.__send__(zns, :zObjects, 'xsi:type' => "#{ons}:#{remote_name}") do |a|
           @model.to_hash.each do |k,v|
-            a.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
+            a.__send__(ons, k.to_s.camelize.to_sym, (v.is_a?(Date)||v.is_a?(Time) ? v.to_datetime.strftime("%FT%T%:z") : v)) unless v.nil?
           end
           generate_complex_objects(a, :create)
         end
