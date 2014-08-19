@@ -4,7 +4,7 @@ module Zuora
   class Version
     MAJOR = 0
     MINOR = 0
-    PATCH = 16
+    PATCH = 17
 
     def self.to_s
       "#{MAJOR}.#{MINOR}.#{PATCH}"
