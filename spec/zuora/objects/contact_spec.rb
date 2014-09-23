@@ -37,6 +37,18 @@ describe Zuora::Objects::Contact do
     it "requires last_name" do
       subject.errors[:last_name].should include("can't be blank")
     end
+
+    context "when persisted record" do
+      before :each do
+        subject.stub(:new_record? => false)
+
+        subject.should_not be_valid
+      end
+
+      it "requires account_id" do
+        subject.errors[:account_id].should include("can't be blank")
+      end
+    end
   end
 
   describe "read only attributes" do

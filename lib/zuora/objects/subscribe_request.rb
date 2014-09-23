@@ -44,7 +44,7 @@ module Zuora::Objects
       result = connector.current_client.request(:subscribe) do |xml|
         xml.__send__(zns, :subscribes) do |s|
           s.__send__(zns, :Account) do |a|
-            generate_account(a)
+            generate_object(a, account)
           end
 
           s.__send__(zns, :SubscribeOptions) do |so|
@@ -52,15 +52,15 @@ module Zuora::Objects
           end unless subscribe_options.blank?
 
           s.__send__(zns, :PaymentMethod) do |pm|
-            generate_payment_method(pm)
+            generate_object(pm, payment_method)
           end
 
           s.__send__(zns, :BillToContact) do |btc|
-            generate_bill_to_contact(btc)
+            generate_object(btc, bill_to_contact)
           end
 
           s.__send__(zns, :SoldToContact) do |btc|
-            generate_sold_to_contact(btc)
+            generate_object(btc, sold_to_contact)
           end unless sold_to_contact.nil?
 
           s.__send__(zns, :SubscriptionData) do |sd|
@@ -81,78 +81,48 @@ module Zuora::Objects
       apply_response(result.to_hash, :subscribe_response)
     end
 
+    # method to support backward compatibility of a single
+    # product_rate_plan
+    def product_rate_plan=(rate_plan_object)
+      self.product_rate_plans = [rate_plan_object]
+    end
+
     protected
 
     def apply_response(response_hash, type)
       result = response_hash[type][:result]
       if result[:success]
+        subscription.account_id = result[:account_id]
         subscription.id = result[:subscription_id]
         subscription.clear_changed_attributes!
         @previously_changed = changes
         @changed_attributes.clear
-        return true
       else
         self.errors.add(:base, result[:errors][:message])
-        return false
       end
+      return result
     end
 
-    def generate_bill_to_contact(builder)
-      if bill_to_contact.new_record?
-        bill_to_contact.to_hash.each do |k,v|
-          builder.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
+    def generate_object(builder, object)
+      if object.new_record?
+        object.to_hash.each do |k,v|
+          builder.__send__(ons, k.to_s.zuora_camelize.to_sym, v) unless v.nil?
         end
       else
-        builder.__send__(ons, :Id, bill_to_contact.id)
-      end
-    end
-
-    def generate_sold_to_contact(builder)
-      if sold_to_contact.new_record?
-        sold_to_contact.to_hash.each do |k,v|
-          builder.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
-        end
-      else
-        builder.__send__(ons, :Id, sold_to_contact.id)
-      end
-    end
-
-    def generate_account(builder)
-      if account.new_record?
-        account.to_hash.each do |k,v|
-          builder.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
-        end
-      else
-        builder.__send__(ons, :Id, account.id)
-      end
-    end
-
-    def generate_payment_method(builder)
-      if payment_method.new_record?
-        payment_method.to_hash.each do |k,v|
-          builder.__send__(ons, k.to_s.camelize.to_sym, v) unless v.nil?
-        end
-      else
-        builder.__send__(ons, :Id, payment_method.id)
+        builder.__send__(ons, :Id, object.id)
       end
     end
 
     def generate_subscription(builder)
       subscription.to_hash.each do |k,v|
-        builder.__send__(ons, k.to_s.camelize.to_sym, (v.is_a?(Date)||v.is_a?(Time) ? v.to_datetime.strftime("%FT%T%:z") : v)) unless v.nil?
+        builder.__send__(ons, k.to_s.zuora_camelize.to_sym, v) unless v.nil?
       end
     end
 
     def generate_subscribe_options(builder)
       subscribe_options.each do |k,v|
-        builder.__send__(ons, k.to_s.camelize.to_sym, v)
+        builder.__send__(ons, k.to_s.zuora_camelize.to_sym, v)
       end
-    end
-
-    # method to support backward compatibility of a single
-    # product_rate_plan
-    def product_rate_plan=(rate_plan_object)
-      self.product_rate_plans = [rate_plan_object]
     end
 
     # TODO: Restructute an intermediate class that includes
