@@ -37,6 +37,10 @@ module Zuora
       @instance ||= new
     end
 
+    def zconfig
+      config
+    end
+
     WSDL = File.expand_path('../../../wsdl/zuora.a.38.0.wsdl', __FILE__)
     SOAP_VERSION = 2
     SANDBOX_ENDPOINT = 'https://apisandbox.zuora.com/apps/services/a/38.0'
@@ -54,7 +58,7 @@ module Zuora
     # Change client to use sandbox url
     def sandbox!
       @client = nil
-      self.class.instance.client.globals[:endpoint] = SANDBOX_ENDPOINT
+      client.globals[:endpoint] = SANDBOX_ENDPOINT
     end
 
     # Callback from Savon observer. Sets the @last_request
@@ -97,8 +101,8 @@ module Zuora
     # @raise [Zuora::Fault]
     def authenticate!
       response = client.call(:login) do
-        message username: Zuora::Api.instance.config.username,
-                password: Zuora::Api.instance.config.password
+        message username: zconfig.username,
+                password: zconfig.password
       end
       self.session = Zuora::Session.generate(response.to_hash)
       client.globals.soap_header({'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }})
