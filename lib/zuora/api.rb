@@ -100,10 +100,7 @@ module Zuora
     # Upon failure a Zoura::Fault will be raised.
     # @raise [Zuora::Fault]
     def authenticate!
-      response = client.call(:login) do
-        message username: zconfig.username,
-                password: zconfig.password
-      end
+      response = client.call(:login, message: { username: zconfig.username, password: zconfig.password})
       self.session = Zuora::Session.generate(response.to_hash)
       client.globals.soap_header({'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }})
     rescue Savon::SOAPFault => e
