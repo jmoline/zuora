@@ -118,12 +118,13 @@ module Zuora
 
     def make_client
       savon_options = {
-        wsdl: WSDL,
-        soap_version: SOAP_VERSION,
-        log: config.log || false,
-        logger: config.logger,
+        wsdl: Zuora::Api::WSDL,
+        soap_version: Zuora::Api::SOAP_VERSION,
+        log: zapi.config.log || false,
+        logger: zapi.config.logger,
         ssl_verify_mode: :none
-      }.reject! {|k,v| v.nil?}
+      }
+      savon_options.reject! {|k,v| v.nil?}
 
       Savon.client(savon_options)
     end
